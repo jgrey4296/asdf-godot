@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# https://asdf-vm.com/plugins/create.html#extension-commands-for-asdf-cli
+# https://gut.readthedocs.io/en/v9.5.0/Command-Line.html
+set -euo pipefail
+
+godot --headless -d -s --path "$PWD" addons/gut/gut_cmdln.gd -gdir "$1"
