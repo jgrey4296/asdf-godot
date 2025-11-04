@@ -32,12 +32,12 @@ else
 fi
 
 # Download tar.gz file to the download directory
-if [[ ! -e "$release_file" ]]; then
+if [[ ! -e "${ASDF_DOWNLOAD_PATH}/$release_file" ]]; then
     download_release "$ASDF_INSTALL_VERSION" "$release_file"
 fi
 
 #  Extract contents of tar.gz file into the download directory
-unzip -o "$release_file" -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
+unzip -o "${ASDF_DOWNLOAD_PATH}/$release_file" -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
 
 # Remove the tar.gz file since we don't need to keep it
-rm "$release_file"
+rm "${ASDF_DOWNLOAD_PATH}/$release_file"
