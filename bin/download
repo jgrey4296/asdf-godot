@@ -33,11 +33,17 @@ fi
 
 # Download tar.gz file to the download directory
 if [[ ! -e "${ASDF_DOWNLOAD_PATH}/$release_file" ]]; then
-    download_release "$ASDF_INSTALL_VERSION" "$release_file"
+	url="$GH_REPO/releases/download/${ASDF_INSTALL_VERSION}/${release_file}"
+	echo "* Downloading $TOOL_NAME release $ASDF_INSTALL_VERSION..."
+    # TODO use gh release download if available
+	curl "${curl_opts[@]}" -o "${ASDF_DOWNLOAD_PATH}/$release_file" -C - "$url" || fail "Could not download $url"
+
 fi
 
 #  Extract contents of tar.gz file into the download directory
-unzip -o "${ASDF_DOWNLOAD_PATH}/$release_file" -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
+echo "* Extracting..."
+unzip -o "${ASDF_DOWNLOAD_PATH}/"*.zip -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
 
 # Remove the tar.gz file since we don't need to keep it
-rm "${ASDF_DOWNLOAD_PATH}/$release_file"
+echo "* Cleaning up..."
+rm "${ASDF_DOWNLOAD_PATH}/"*.zip

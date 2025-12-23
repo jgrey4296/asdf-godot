@@ -13,4 +13,23 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=../lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
-install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH/bin"
+[[ "$ASDF_INSTALL_TYPE" = "version" ]] || fail "asdf-$TOOL_NAME supports release installs only"
+
+arch=$(uname -m)
+
+(
+    mkdir -p "$ASDF_INSTALL_PATH/bin"
+    echo "* Copying into: $ASDF_INSTALL_PATH/bin"
+    cp -r \
+        "${ASDF_DOWNLOAD_PATH}/${TOOL_NAME}_v${ASDF_INSTALL_VERSION}"*"$arch"/*  \
+        "$ASDF_INSTALL_PATH/bin"
+
+
+    tool_cmd="${TOOL_NAME}_v${ASDF_INSTALL_VERSION}"*"$arch"
+    test -x "$ASDF_INSTALL_PATH/$tool_cmd" || fail "Expected $ASDF_INSTALL_PATH/$tool_cmd to be executable."
+
+    echo "* $TOOL_NAME $ASDF_INSTALL_VERSION installation was successful!"
+) || (
+    rm -rf "$ASDF_INSTALL_PATH"
+    fail "An error occurred while installing $TOOL_NAME $ASDF_INSTALL_VERSION."
+)
