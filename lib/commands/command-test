@@ -1,6 +1,48 @@
 #!/usr/bin/env bash
 # https://asdf-vm.com/plugins/create.html#extension-commands-for-asdf-cli
 # https://gut.readthedocs.io/en/v9.5.0/Command-Line.html
-set -euo pipefail
+#set -o errexit
+# set -o nounset
+# set -o pipefail
 
-godot --headless -d -s --path "$PWD" addons/gut/gut_cmdln.gd -gdir "$1"
+function print-help () {
+    # test args, if the last one is -h or --help
+    # print help and exit
+    case "${@: -1}" in
+        *) if [[ "$#" -gt 0 ]]; then
+               echo "args exist"
+               return
+           fi
+           ;;
+    esac
+    echo -e "
+usage: asdf cmd godot test [dir]
+
+positional arguments:
+dir : the directory to test.
+
+options:
+-h, --help    : show this help message and exit
+
+"
+    godot --headless -d -s --path "$PWD" "$PWD/addons/gut/gut_cmdln.gd" -gh
+    exit "${PRINTED_HELP:-2}"
+}
+
+print-help "$@"
+
+godot_args=(
+    --headless
+    --debug
+    --script
+    --path "$PWD"
+)
+
+gut_args=(
+    "$PWD/addons/gut/gut_cmdln.gd"
+    -gdir "${1:-__tests}"
+    -gexit
+)
+
+
+godot "${godot_args[@]}" "${gut_args[@]}"

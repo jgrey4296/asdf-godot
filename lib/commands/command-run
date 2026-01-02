@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # https://asdf-vm.com/plugins/create.html#extension-commands-for-asdf-cli
-set -euo pipefail
+#set -o errexit
+set -o nounset
+set -o pipefail
 
 godot --headless -s "$@"
