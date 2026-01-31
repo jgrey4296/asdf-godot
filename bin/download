@@ -6,15 +6,6 @@
 
 set -euo pipefail
 
-uname_s=$(uname)
-arch=$(uname -m)
-case "$uname_s" in
-    Linux)
-        sys_target="linux"
-    ;;
-    *) echo "OS Not Supported: $uname_s" ;;
-esac
-
 current_script_path=${BASH_SOURCE[0]}
 plugin_dir=$(dirname "$(dirname "$current_script_path")")
 
@@ -23,27 +14,21 @@ source "${plugin_dir}/lib/utils.bash"
 
 mkdir -p "$ASDF_DOWNLOAD_PATH"
 
-if [[ "${ASDF_GODOT_NO_MONO:-0}" -eq 1 ]]; then
-    echo "* Downloading without C#"
-    release_file="${TOOL_NAME}_v${ASDF_INSTALL_VERSION}_${sys_target}.${arch}.zip"
-else
-    echo "* Downloading with C#, pass ASDF_GODOT_NO_MONO=1 to disable c# installation"
-    release_file="${TOOL_NAME}_v${ASDF_INSTALL_VERSION}_mono_${sys_target}_${arch}.zip"
-fi
+release_dir="$(gd-version-id)-stable"
+release_file=$(gd-zip-file)
+url="$GH_REPO/releases/download/${release_dir}/${release_file}"
 
-# Download tar.gz file to the download directory
+# Download compressed file to the download directory
 if [[ ! -e "${ASDF_DOWNLOAD_PATH}/$release_file" ]]; then
-	url="$GH_REPO/releases/download/${ASDF_INSTALL_VERSION}/${release_file}"
 	echo "* Downloading $TOOL_NAME release $ASDF_INSTALL_VERSION..."
     # TODO use gh release download if available
 	curl "${curl_opts[@]}" -o "${ASDF_DOWNLOAD_PATH}/$release_file" -C - "$url" || fail "Could not download $url"
-
 fi
 
-#  Extract contents of tar.gz file into the download directory
+# Extract contents of compressed file into the download directory
 echo "* Extracting..."
-unzip -o "${ASDF_DOWNLOAD_PATH}/"*.zip -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
+unzip -o "${ASDF_DOWNLOAD_PATH}/${release_file}" -d "$ASDF_DOWNLOAD_PATH" || fail "Could not extract $release_file"
 
-# Remove the tar.gz file since we don't need to keep it
+# Remove the compressed file since we don't need to keep it
 echo "* Cleaning up..."
-rm "${ASDF_DOWNLOAD_PATH}/"*.zip
+rm "${ASDF_DOWNLOAD_PATH}/${release_file}"

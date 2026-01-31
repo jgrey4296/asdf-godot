@@ -15,21 +15,36 @@ source "${plugin_dir}/lib/utils.bash"
 
 [[ "$ASDF_INSTALL_TYPE" = "version" ]] || fail "asdf-$TOOL_NAME supports release installs only"
 
-arch=$(uname -m)
+
+dir_name=$(gd-extract-path)
+bin_name=$(gd-bin-name)
 
 (
-    mkdir -p "$ASDF_INSTALL_PATH/bin"
-    echo "* Copying into: $ASDF_INSTALL_PATH/bin"
-    cp -r \
-        "${ASDF_DOWNLOAD_PATH}/${TOOL_NAME}_v${ASDF_INSTALL_VERSION}"*"$arch"/*  \
-        "$ASDF_INSTALL_PATH/bin"
+    echo "* Installing into: $ASDF_INSTALL_PATH/bin"
+    mkdir "${ASDF_INSTALL_PATH}/bin"
+    if [[ -x "${ASDF_DOWNLOAD_PATH}/${bin_name}" ]]; then
+        # Just the executable
+        cp "${ASDF_DOWNLOAD_PATH}/${bin_name}" \
+            "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}"
 
+    else
+        # executable + rest
+        cp -r "${ASDF_DOWNLOAD_PATH}/${dir_name}/"* \
+            "${ASDF_INSTALL_PATH}/bin/"
+        mv "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
+            "${ASDF_DOWNLOAD_PATH}/bin/${TOOL_NAME}"
+    fi
 
-    tool_cmd="${TOOL_NAME}_v${ASDF_INSTALL_VERSION}"*"$arch"
-    test -x "$ASDF_INSTALL_PATH/$tool_cmd" || fail "Expected $ASDF_INSTALL_PATH/$tool_cmd to be executable."
-
+    echo "* Testing Installation"
+    test -x "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}" || fail "Expected $ASDF_INSTALL_PATH/bin/${TOOL_NAME} to be executable."
     echo "* $TOOL_NAME $ASDF_INSTALL_VERSION installation was successful!"
+
+    echo "* TODO Install export templates"
+
+
 ) || (
     rm -rf "$ASDF_INSTALL_PATH"
     fail "An error occurred while installing $TOOL_NAME $ASDF_INSTALL_VERSION."
 )
+
+

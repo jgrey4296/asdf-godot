@@ -5,6 +5,19 @@
 # set -o nounset
 # set -o pipefail
 
+HELP_TEXT="
+usage: asdf cmd godot test [dir]
+
+positional arguments:
+dir : the directory to test.
+
+options:
+-h, --help    : show this help message and exit
+"
+GUT_LOC="$PWD/addons/gut"
+
+[[ -d "$GUT_LOC" ]] || { echo "GUT was not found"; exit 1; }
+
 function print-help () {
     # test args, if the last one is -h or --help
     # print help and exit
@@ -15,34 +28,28 @@ function print-help () {
            fi
            ;;
     esac
-    echo -e "
-usage: asdf cmd godot test [dir]
+    echo -e "$HELP_TEXT"
 
-positional arguments:
-dir : the directory to test.
-
-options:
--h, --help    : show this help message and exit
-
-"
-    godot --headless -d -s --path "$PWD" "$PWD/addons/gut/gut_cmdln.gd" -gh
-    exit "${PRINTED_HELP:-2}"
+    if [[ -d "GUTLOC" ]]; then
+        godot --headless -d -s --path "$PWD" "$PWD/addons/gut/gut_cmdln.gd" -gh
+    fi
+    exit 0
 }
 
 print-help "$@"
 
 godot_args=(
     --headless
-    --debug
     --script
     --path "$PWD"
 )
 
 gut_args=(
     "$PWD/addons/gut/gut_cmdln.gd"
-    -gdir "${1:-__tests}"
     -gexit
+    -gdir "${1:-__tests}"
 )
 
+# TODO: Parse Args
 
 godot "${godot_args[@]}" "${gut_args[@]}"

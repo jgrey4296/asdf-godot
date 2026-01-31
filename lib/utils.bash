@@ -16,7 +16,7 @@ set -euo pipefail
 
 GH_REPO="https://github.com/godotengine/godot"
 TOOL_NAME="Godot"
-TOOL_TEST="godot --help"
+TOOL_TEST="Godot --help"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -37,9 +37,55 @@ function sort_versions() {
 function list_github_tags() {
 	git ls-remote --tags --refs "$GH_REPO" |
 		grep -o 'refs/tags/.*' | cut -d/ -f3- |
-		sed 's/^v//'
+		sed -n "s/-stable//; p; s/$/_mono/; p"
 }
 
 function list_all_versions() {
 	list_github_tags
+}
+
+
+# # -----
+
+function gd-version-id () {
+	echo "${ASDF_INSTALL_VERSION/_mono/}"
+}
+
+function gd-zip-file () {
+	case "$ASDF_INSTALL_VERSION" in
+		*_mono)
+			echo "$(gd-extract-path).zip"
+			;;
+		*)
+			echo "$(gd-bin-name).zip"
+			;;
+	esac
+}
+
+function gd-bin-name () {
+	# returns eg: Godot_v4.5.1-stable_linux.x86_64
+	sys_name="$(uname -s | sed 's/./\L&/')"
+	is_mono=""
+	case "$ASDF_INSTALL_VERSION" in
+		*_mono)
+			is_mono="_mono"
+			;;
+		*)
+			;;
+	esac
+	echo "${TOOL_NAME}_v$(gd-version-id)-stable${is_mono}_${sys_name}.$(uname -m)"
+}
+
+function gd-extract-path () {
+	# returns eg: Godot_v4.5.1-stable_linux_x86_64
+	# note the underscore before x86..
+	sys_name=$(uname -s | sed 's/./\L&/')
+	case "${ASDF_INSTALL_VERSION}" in
+		*_mono)
+			echo -e "${TOOL_NAME}_v$(gd-version-id)--stable_mono_${sys_name}_$(uname -m)"
+			;;
+		*)
+			exit
+			;;
+	esac
 }
