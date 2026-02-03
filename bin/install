@@ -37,14 +37,15 @@ bin_name=$(gd-bin-name)
         # executable + rest
         cp -r "${ASDF_DOWNLOAD_PATH}/${dir_name}/"* \
             "${ASDF_INSTALL_PATH}/bin/"
-        ln -s "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
-            "${ASDF_DOWNLOAD_PATH}/bin/${TOOL_NAME}"
-        ln -s "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
-            "${ASDF_DOWNLOAD_PATH}/bin/${SIMPLE_NAME}"
+
+        ln -s "${ASDF_INSTALL_PATH}/bin/${bin_name}" \
+            "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}"
+        ln -s "${ASDF_INSTALL_PATH}/bin/${bin_name}" \
+            "${ASDF_INSTALL_PATH}/bin/${SIMPLE_NAME}"
     fi
 
     echo "* Testing Installation"
-    test -x "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}" || fail "Expected $ASDF_INSTALL_PATH/bin/${TOOL_NAME} to be executable."
+    test -x "${ASDF_INSTALL_PATH}/bin/${bin_name}" || fail "Expected $ASDF_INSTALL_PATH/bin/${TOOL_NAME} to be executable."
     echo "* $TOOL_NAME $ASDF_INSTALL_VERSION installation was successful!"
 
     echo "* TODO Install export templates"
