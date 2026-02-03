@@ -16,6 +16,7 @@ set -euo pipefail
 
 GH_REPO="https://github.com/godotengine/godot"
 TOOL_NAME="Godot"
+SIMPLE_NAME="godot"
 TOOL_TEST="Godot --help"
 
 fail() {
@@ -82,7 +83,7 @@ function gd-extract-path () {
 	sys_name=$(uname -s | sed 's/./\L&/')
 	case "${ASDF_INSTALL_VERSION}" in
 		*_mono)
-			echo -e "${TOOL_NAME}_v$(gd-version-id)--stable_mono_${sys_name}_$(uname -m)"
+			echo -e "${TOOL_NAME}_v$(gd-version-id)-stable_mono_${sys_name}_$(uname -m)"
 			;;
 		*)
 			exit

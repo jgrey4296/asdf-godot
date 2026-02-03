@@ -25,14 +25,22 @@ bin_name=$(gd-bin-name)
     if [[ -x "${ASDF_DOWNLOAD_PATH}/${bin_name}" ]]; then
         # Just the executable
         cp "${ASDF_DOWNLOAD_PATH}/${bin_name}" \
+            "${ASDF_INSTALL_PATH}/bin/"
+
+        ln -s "${ASDF_INSTALL_PATH}/bin/${bin_name}" \
             "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}"
+
+        ln -s "${ASDF_INSTALL_PATH}/bin/${bin_name}" \
+            "${ASDF_INSTALL_PATH}/bin/{$SIMPLE_NAME}"
 
     else
         # executable + rest
         cp -r "${ASDF_DOWNLOAD_PATH}/${dir_name}/"* \
             "${ASDF_INSTALL_PATH}/bin/"
-        mv "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
+        ln -s "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
             "${ASDF_DOWNLOAD_PATH}/bin/${TOOL_NAME}"
+        ln -s "${ASDF_DOWNLOAD_PATH}/bin/${bin_name}" \
+            "${ASDF_DOWNLOAD_PATH}/bin/${SIMPLE_NAME}"
     fi
 
     echo "* Testing Installation"
