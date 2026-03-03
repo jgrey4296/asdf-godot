@@ -31,7 +31,7 @@ bin_name=$(gd-bin-name)
             "${ASDF_INSTALL_PATH}/bin/${TOOL_NAME}"
 
         ln -s "${ASDF_INSTALL_PATH}/bin/${bin_name}" \
-            "${ASDF_INSTALL_PATH}/bin/{$SIMPLE_NAME}"
+            "${ASDF_INSTALL_PATH}/bin/${SIMPLE_NAME}"
 
     else
         # executable + rest
